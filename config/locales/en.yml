@@ -1,0 +1,7 @@
+en:
+  data_checker:
+    error_codes:
+      link_invalid: Invalid link
+    link_checker:
+      message_template: "The '%{field}' field of '%{subject}' contains an invalid link to %{link}, which results in HTTP %{http_status} (%{http_message})"
+  
