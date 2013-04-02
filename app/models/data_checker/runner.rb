@@ -7,7 +7,12 @@ class DataChecker::Runner
     def models *model_classes
       @models = model_classes if model_classes.present?
       @models || []
-    end    
+    end
+    
+    def scope scope = nil
+      @scope = scope if scope && scope.lambda?
+      @scope
+    end   
     
     def after_check after_check = nil
       @after_check = after_check if after_check && after_check.lambda?
@@ -29,7 +34,7 @@ class DataChecker::Runner
       raise 'No checkers specified for runner' unless checkers.present?
       
       models.each do |model|
-        model.find_in_batches do |batch|
+        (scope ? scope.call(model) : model.scoped).find_in_batches do |batch|
           batch.each do |subject|
             checkers.each{ |checker| checker.apply(subject) }
             after_check.call(subject) if after_check

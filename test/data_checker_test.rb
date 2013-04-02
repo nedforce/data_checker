@@ -90,5 +90,17 @@ class DataCheckerTest < ActiveSupport::TestCase
     
     DataChecker::Engine.instance_variable_set :@logger, nil
     DataChecker.config.checker_logger = DataChecker::DatabaseLogger    
-  end  
+  end 
+  
+  test 'should not report the same error twice' do
+    node = Node.create!(title: 'test', body: 'This is a non existing <a href="http://www.google.com/404me">link</a>', body2: 'OK')
+    
+    assert_difference 'DataChecker::DataWarning.count' do
+      LinkChecker.new.apply node
+    end
+    
+    assert_no_difference 'DataChecker::DataWarning.count' do
+      LinkChecker.new.apply node
+    end
+  end
 end

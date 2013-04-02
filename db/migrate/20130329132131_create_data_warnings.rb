@@ -1,7 +1,7 @@
 class CreateDataWarnings < ActiveRecord::Migration
   def change
     create_table :data_warnings do |t|
-      t.integer :subject_id
+      t.integer :subject_id, references: nil
       t.string  :subject_type
       t.string  :error_code
       t.text    :message
