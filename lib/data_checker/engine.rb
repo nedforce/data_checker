@@ -1,8 +1,7 @@
 module DataChecker
   class Engine < Rails::Engine
     config.data_checkers = Set.new  
-    config.checker_logger = DataChecker::RailsLogger  
-    config.last_checked_field = :last_checked_at
+    config.checker_logger = DataChecker::RailsLogger
     register_data_checkers
   end
   

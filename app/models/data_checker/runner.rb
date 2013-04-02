@@ -7,6 +7,11 @@ class DataChecker::Runner
     def models *model_classes
       @models = model_classes if model_classes.present?
       @models || []
+    end    
+    
+    def after_check after_check = nil
+      @after_check = after_check if after_check && after_check.lambda?
+      @after_check
     end   
       
     def checker checker_class, options = {}, attributes = {}, &block
@@ -24,11 +29,10 @@ class DataChecker::Runner
       raise 'No checkers specified for runner' unless checkers.present?
       
       models.each do |model|
-        update_last_checked = DataChecker.config.last_checked_field && model.column_names.include?(DataChecker.config.last_checked_field.to_s)
         model.find_in_batches do |batch|
           batch.each do |subject|
             checkers.each{ |checker| checker.apply(subject) }
-            subject.update_column DataChecker.config.last_checked_field, Time.now if update_last_checked
+            after_check.call(subject) if after_check
           end
         end        
       end
