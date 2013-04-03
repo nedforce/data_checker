@@ -1,7 +1,7 @@
 nl:
   data_checker:
     error_codes:
-      link_invalid: Ongeldige link
+      invalid_link: Ongeldige link
     link_checker:
       message_template: "Het '%{field}' veld van '%{subject}' bevat een ongeldige link naar %{link}, wat resulteert in HTTP %{http_status} (%{http_message})"
   
