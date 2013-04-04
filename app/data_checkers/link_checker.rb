@@ -9,22 +9,30 @@ class LinkChecker < DataChecker::Checker
         next unless content.present?
         document = Nokogiri::XML.parse("<root>#{content}</root>")
         document.search('a[href]').each do |link|
+          next if link[:href] =~ /mailto/
+          
           http_status = 200
           http_message = 'OK'
+          
           begin
             url = URI.parse(link[:href])
-            Net::HTTP.start(url.host, url.port) do |http| 
-              response = http.head(url.path)
-              http_status = response.code.to_i
-              http_message = response.message
+            http = Net::HTTP.new(url.host, url.port)
+            
+            if url.scheme == 'https' 
+              http.use_ssl = true
+              http.verify_mode = OpenSSL::SSL::VERIFY_NONE
             end
-          rescue SocketError
+              
+            response = http.head(url.path.present? ? url.path : '/')
+            http_status = response.code.to_i
+            http_message = response.message
+          rescue SocketError, Errno::ECONNREFUSED
             http_status = 404
             http_message = 'Not Found'
           rescue URI::InvalidURIError
             http_status = 400
-            http_message = 'Invalid URI'
-          rescue Timeout::Error
+            http_message = 'Invalid URI'          
+          rescue Timeout::Error, Errno::ETIMEDOUT
             # Assume the page is temporarily unavailable
             http_status = 200            
           end
