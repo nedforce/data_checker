@@ -3,6 +3,9 @@ require 'net/http'
 class LinkChecker < DataChecker::Checker
   
   def apply subject
+    raise "Site URL should be specified" unless DataChecker.config.link_checker_site_url.present?
+    
+    base_url = URI.parse(DataChecker.config.link_checker_site_url)
     checker_columns = subject.class.respond_to?(:checker_columns) ? Array.wrap(subject.class.checker_columns) : subject.class.columns.select{|column| column.type == :text }.map(&:name)
     checker_columns.each do |checker_column|
       subject.send(checker_column).to_s.tap do |content|
@@ -15,7 +18,7 @@ class LinkChecker < DataChecker::Checker
           http_message = 'OK'
           
           begin
-            url = URI.parse(link[:href])
+            url = base_url.merge(link[:href])
             http = Net::HTTP.new(url.host, url.port)
             
             if url.scheme == 'https' 
