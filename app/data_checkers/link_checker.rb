@@ -34,8 +34,8 @@ class LinkChecker < DataChecker::Checker
             http_message = 'Not Found'
           rescue URI::InvalidURIError
             http_status = 400
-            http_message = 'Invalid URI'          
-          rescue Timeout::Error, Errno::ETIMEDOUT
+            http_message = 'Invalid URI'
+          rescue Exception
             # Assume the page is temporarily unavailable
             http_status = 200            
           end
