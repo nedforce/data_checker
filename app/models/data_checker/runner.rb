@@ -32,7 +32,7 @@ class DataChecker::Runner
       raise 'No checkers specified for runner' unless checkers.present?
 
       models.each do |model|
-        (scope ? scope.call(model) : model.scoped).find_in_batches do |batch|
+        (scope ? scope.call(model) : model.all).find_in_batches do |batch|
           batch.each do |subject|
             checkers.each { |checker| checker.apply(subject) }
             after_check.call(subject) if after_check

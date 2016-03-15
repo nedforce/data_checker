@@ -6,6 +6,7 @@ class LinkChecker < DataChecker::Checker
 
     base_url = URI.parse(DataChecker.config.link_checker_site_url)
     checker_columns = subject.class.respond_to?(:checker_columns) ? Array.wrap(subject.class.checker_columns) : subject.class.columns.select { |column| column.type == :text }.map(&:name)
+
     checker_columns.each do |checker_column|
       subject.send(checker_column).to_s.tap do |content|
         next unless content.present?
