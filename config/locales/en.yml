@@ -4,4 +4,3 @@ en:
       invalid_link: Invalid link
     link_checker:
       message_template: "The '%{field}' field of '%{subject}' contains an invalid link to %{link}, which results in HTTP %{http_status} (%{http_message})"
-  
