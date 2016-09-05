@@ -27,7 +27,7 @@ class LinkChecker < DataChecker::Checker
               http.verify_mode = OpenSSL::SSL::VERIFY_NONE
             end
 
-            response = http.head(url.path.present? ? url.path : '/')
+            response = http.head(url.path.present? ? url.path : '/', 'User-Agent' => DataChecker.config.user_agent)
             http_status = response.code.to_i
             http_message = response.message
           rescue SocketError, Errno::ECONNREFUSED
