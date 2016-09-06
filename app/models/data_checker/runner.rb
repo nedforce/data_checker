@@ -12,6 +12,11 @@ class DataChecker::Runner
       @scope
     end
 
+    def select(select = nil)
+      @select = select if select && select.lambda?
+      @select
+    end
+
     def after_check(after_check = nil)
       @after_check = after_check if after_check && after_check.lambda?
       @after_check
@@ -34,8 +39,10 @@ class DataChecker::Runner
       models.each do |model|
         (scope ? scope.call(model) : model.all).find_in_batches do |batch|
           batch.each do |subject|
-            checkers.each { |checker| checker.apply(subject) }
-            after_check.call(subject) if after_check
+            if select.nil? || select.call(subject)
+              checkers.each { |checker| checker.apply(subject) }
+              after_check.call(subject) if after_check
+            end
           end
         end
       end

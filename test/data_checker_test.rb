@@ -28,6 +28,14 @@ class DataCheckerTest < ActiveSupport::TestCase
     assert warning.message.include?('HTTP 404')
   end
 
+  test 'should ignore invalid http status codes' do
+    Net::HTTPResponse.any_instance.expects(:code).returns(999)
+    node = Node.create!(title: 'test', body: 'This is a non existing <a href="http://www.google.com/404me">link</a>', body2: 'OK')
+    assert_no_difference 'DataChecker::DataWarning.count' do
+      LinkChecker.new.apply node
+    end
+  end
+
   test 'link checker should find invalid links on all text columns' do
     node = Node.create!(title: 'test', body: 'This is an invalid <a href="htp://www.dewfgreghre.cdwm">link</a>', body2: 'This is a non existing <a href="http://www.google.com/404me">link</a>')
 
@@ -98,5 +106,15 @@ class DataCheckerTest < ActiveSupport::TestCase
     assert_no_difference 'DataChecker::DataWarning.count' do
       LinkChecker.new.apply node
     end
+  end
+
+  test 'should skip rejected nodes' do
+    Node.any_instance.expects(:online).twice.returns(false)
+
+    node = Node.create!(title: 'test', body: 'This is a non existing <a href="http://www.google.com/404me">link</a>')
+
+    assert node.last_checked_at.blank?
+    assert NodeCheckRunner.run!
+    assert node.reload.last_checked_at.blank?
   end
 end

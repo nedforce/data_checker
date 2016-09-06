@@ -42,7 +42,7 @@ class LinkChecker < DataChecker::Checker
             http_status = 200
           end
 
-          if http_status >= 400
+          if http_status >= 400 && http_status < 600
             message = I18n.t('data_checker.link_checker.message_template', subject: (subject.respond_to?(:to_label) ? subject.to_label : subject.to_s), field: subject.class.human_attribute_name(checker_column, default: checker_column), link: link[:href], http_status: http_status, http_message: http_message)
             warn(subject, 'invalid_link', message)
           end
