@@ -13,6 +13,7 @@ class LinkChecker < DataChecker::Checker
         document = Nokogiri::XML.parse("<root>#{content}</root>")
         document.search('a[href]').each do |link|
           next if link[:href] =~ /mailto:/
+          next if link[:href] =~ /whatsapp:\/\//
           next if link[:href] =~ /tel:\/\//
 
           http_status = 200
