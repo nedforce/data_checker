@@ -43,7 +43,7 @@ class DataCheckerTest < ActiveSupport::TestCase
       LinkChecker.new.apply node
     end
 
-    DataChecker::DataWarning.scoped.each do |warning|
+    DataChecker::DataWarning.all.each do |warning|
       assert_equal node, warning.subject
       assert_equal 'invalid_link', warning.error_code
     end
@@ -68,9 +68,9 @@ class DataCheckerTest < ActiveSupport::TestCase
 
     assert NodeCheckRunner.run!
 
-    assert DataChecker::DataWarning.scoped.detect{|warning| warning.subject == node1 }.nil?
-    assert warning1 = DataChecker::DataWarning.scoped.detect{|warning| warning.subject == node2}
-    assert warning2 = DataChecker::DataWarning.scoped.detect{|warning| warning.subject == node3}
+    assert DataChecker::DataWarning.all.detect{|warning| warning.subject == node1 }.nil?
+    assert warning1 = DataChecker::DataWarning.all.detect{|warning| warning.subject == node2}
+    assert warning2 = DataChecker::DataWarning.all.detect{|warning| warning.subject == node3}
 
     assert warning1.message.include?('http://www.google.com/404me')
     assert warning2.message.include?('htp://www.dewfgreghre.cdwm')
